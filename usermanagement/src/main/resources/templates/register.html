@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/header :: myheader}">
+  <title>Registration Page</title>
+</head>
+<body>
+<nav th:insert="~{fragments/navbar :: mynavbar}"></nav>
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <div th:if="${param.success}"
+           class="alert alert-info">
+        You are registered successfully to our awesome system!
+      </div>
+      <div th:if="${numberOfUsers == 0}">
+        <div class="alert alert-info">Firstly, Registering an Admin
+        </div>
+      </div>
+      <div th:if="${param.emailExists}"
+           class="alert alert-danger">
+        The email specified by you already exists in our system. Kindly
+        re-register with a different e-mail.
+      </div>
+      <h2 class="form-signin-heading">Register User</h2>
+      <form th:action="@{/register}" method="post" th:object="${user}"
+            class="form-signin">
+        <label for="email" class="sr-only">Email</label>
+        <p>
+          <input type="email" id="email" name="username"
+                 class="form-control"
+                 placeholder="E-mail" required autofocus=""
+                 th:field="*{username}">
+        </p>
+        <label for="password" class="sr-only">Password</label>
+        <p>
+          <input type="password" id="password" name="password"
+                 class="form-control"
+                 placeholder="Password" required th:field="*{password}">
+        </p>
+        <p>
+        <div th:if="${numberOfUsers != 0}">
+          Select Role
+          <select th:field="*{role}" id="dropDownList">
+            <option th:each="role : ${roles}"
+                    th:value="${role}" th:text="${role}"></option>
+          </select>
+        </div>
+        </p>
+        <p>
+          <button class="btn btn-primary btn-block mt-3" type="submit">
+            Register
+          </button>
+          <span>Existing User?<a th:href="@{/login}">Login here</a>
+      </span>
+        </p>
+      </form>
+      <input type="hidden" th:name="${_csrf.parameterName}"
+             th:value="${_csrf.token}"/>
+    </div>
+  </div>
+  <div th:insert="~{fragments/footer :: foot}"></div>
+</div>
+</body>
+</html>

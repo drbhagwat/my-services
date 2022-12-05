@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/header :: myheader}">
+  <title>Users Page</title>
+</head>
+<body>
+<nav th:insert="~{fragments/navbar :: mynavbar}"></nav>
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <a class="btn btn-primary mb-3"
+         th:href="@{/register}">
+        Add User</a>
+      <table class="table caption-top table-bordered table-striped"
+             id="userTable">
+        <caption><strong>All Users in the System</strong></caption>
+        <thead>
+        <tr>
+          <th>User's Email</th>
+          <th>View User Details</th>
+          <th>Delete User</th>
+          <th>Update User</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${users}">
+          <td th:text="${user.username}"></td>
+          <td>
+            <a class="btn btn-primary"
+               th:href="@{/api/v1/users/{uname}(uname=${user.username})}">
+              View</a>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <form class="form-signin" method="post" th:action="@{/logout}">
+      <button class="btn btn-primary btn-block" type="submit">Logout
+      </button>
+    </form>
+  </div>
+  <div th:insert="~{fragments/footer :: foot}"></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+      lang="en">
+<head th:replace="~{fragments/header :: myheader}">
+  <title>Home Page</title>
+</head>
+<body>
+<nav th:insert="fragments/navbar :: mynavbar"></nav>
+<div class="container">
+  <span sec:authorize="isAuthenticated()"> Welcome principal
+  .username User</span>
+  <div th:insert="~{fragments/footer :: foot}"></div>
+</div>
+</body>
+</html>

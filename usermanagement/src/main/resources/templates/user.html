@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/header :: myheader}">
+  <title>User Details Page</title>
+</head>
+<body>
+<nav th:insert="~{fragments/navbar :: mynavbar}"></nav>
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <table class="table table-bordered table-striped caption-top">
+        <caption><strong>User Details</strong></caption>
+        <thead>
+        <tr>
+          <th><span th:text="Email"></span></th>
+          <th><span th:text="AccountNotExpired"></span></th>
+          <th><span th:text="AccountNotLocked"></span></th>
+          <th><span th:text="Enabled"></span></th>
+          <th><span th:text="CredentialsNonExpired"></span></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td><span th:text="${user.username}"></span></td>
+          <td><span th:text="${user.accountNonExpired}"></span></td>
+          <td><span th:text="${user.accountNonLocked}"></span></td>
+          <td><span th:text="${user.enabled}"></span></td>
+          <td><span th:text="${user.credentialsNonExpired}"></span></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div th:insert="~{fragments/footer :: foot}"></div>
+</div>
+</body>
+</html>
