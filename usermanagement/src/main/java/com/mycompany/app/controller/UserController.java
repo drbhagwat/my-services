@@ -2,11 +2,14 @@ package com.mycompany.app.controller;
 
 import com.mycompany.app.model.User;
 import com.mycompany.app.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 @RequestMapping("/api/v1/users")
@@ -25,7 +28,7 @@ public class UserController {
     return "users";
   }
 
-  @GetMapping(path = "{userName}")
+  @GetMapping("/get/{userName}")
   @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
   public String get(Model model, @PathVariable("userName") String userName) {
     model.addAttribute("user", userService.get(userName));
@@ -35,28 +38,36 @@ public class UserController {
   @GetMapping("/add")
   @PreAuthorize("hasAuthority('user:write')")
   public String add(Model model) {
-    User user = new User();
-    model.addAttribute("user", user);
-    return "add-user";
+    model.addAttribute("user", new User());
+    return "/register";
   }
 
-  @PostMapping("/add")
+  @GetMapping("/update")
   @PreAuthorize("hasAuthority('user:write')")
-  public String add(@ModelAttribute User user) {
-    userService.add(user);
+  public ModelAndView update(@RequestParam String userName) {
+    User user = userService.find(userName);
+    ModelAndView modelAndView = new ModelAndView("update");
+    modelAndView.addObject("user", user);
+    return modelAndView;
+  }
+
+  @PostMapping("/update")
+  @PreAuthorize("hasAuthority('user:write')")
+  public String update(@Valid User user, BindingResult bindingResult,
+                       Model model) {
+
+    if (bindingResult.hasErrors()) {
+      model.addAttribute("user", user);
+      return "update";
+    }
+    userService.update(userService.find(user.getUsername()), user);
     return "redirect:/api/v1/users";
   }
 
-  @PutMapping(path = "{userName}")
+  @GetMapping("/delete/{userName}")
   @PreAuthorize("hasAuthority('user:write')")
-  public void update(@PathVariable("userName") String userName,
-                     @RequestParam(required = false) String newUserName) {
-    userService.update(userName, newUserName);
-  }
-
-  @DeleteMapping(path = "{userName}")
-  @PreAuthorize("hasAuthority('user:write')")
-  public void delete(@PathVariable("userName") String userName) {
+  public String delete(@PathVariable("userName") String userName) {
     userService.delete(userName);
+    return "redirect:/api/v1/users";
   }
 }

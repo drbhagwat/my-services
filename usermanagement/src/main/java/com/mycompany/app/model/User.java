@@ -23,13 +23,13 @@ import java.util.HashSet;
 @Setter
 public class User implements UserDetails {
   @Id
-  @NotEmpty
-  @NotNull
+  @NotNull(message = "email cannot be null")
+  @NotEmpty(message = "email cannot be empty")
   @Email
   private String username;
 
-  @NotEmpty(message = "password cannot be empty")
   @NotNull(message = "password cannot be null")
+  @NotEmpty(message = "password cannot be empty")
   @Size(min = 8, message = "password should have at least " +
       " 8 characters")
   private String password;

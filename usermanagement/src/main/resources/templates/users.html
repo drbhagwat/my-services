@@ -27,8 +27,18 @@
           <td th:text="${user.username}"></td>
           <td>
             <a class="btn btn-primary"
-               th:href="@{/api/v1/users/{uname}(uname=${user.username})}">
+               th:href="@{/api/v1/users/get/{uname}(uname=${user.username})}">
               View</a>
+          </td>
+          <td>
+            <a class="btn btn-danger"
+               th:href="@{/api/v1/users/delete/{uname}(uname=${user.username})}">
+              Delete</a>
+          </td>
+          <td>
+            <a class="btn btn-warning"
+               th:href="@{/api/v1/users/update(userName=${user.username})}">
+              Update</a>
           </td>
         </tr>
         </tbody>

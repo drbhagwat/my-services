@@ -40,11 +40,7 @@ public class UserService implements UserDetailsService {
   public User find(String userName) {
     Optional<User> optionalUser =
         userRepository.findById(userName);
-
-    if (optionalUser.isEmpty()) {
-      return null;
-    }
-    return optionalUser.get();
+    return optionalUser.isEmpty() ? null : optionalUser.get();
   }
 
   public User get(String userName) {
@@ -57,16 +53,14 @@ public class UserService implements UserDetailsService {
 
   public boolean add(User user) {
     String userName = user.getUsername();
-    Optional<User> optionalUser =
-        userRepository.findById(userName);
+    Optional<User> optionalUser = userRepository.findById(userName);
 
     if (!optionalUser.isEmpty()) {
       return false;
     }
-
-    /* password input by end user is plain text */
+    /* password input by end user is plain text, encrypt it */
     user.setPassword(passwordEncoder.encode(user.getPassword()));
-    /* set other member-fields to true by default */
+    /* set other fields to true by default */
     user.setAccountNonExpired(true);
     user.setAccountNonLocked(true);
     user.setEnabled(true);
@@ -83,24 +77,25 @@ public class UserService implements UserDetailsService {
     for (AppGrantedAuthority appGrantedAuthority : appGrantedAuthorities) {
       user.addAppGrantedAuthority(appGrantedAuthority);
     }
-    // Save the user - this also saves the set of
-    // permissions in the related child table.
+    // Save user - this also saves the set of permissions in the related
+    // child table.
     userRepository.save(user);
-    return true; // everything worked fine, return true */
+    return true; // everything worked fine, so return true */
   }
 
   @Transactional
-  public void update(String userName, String newUserName) {
-    User user = find(userName);
-
-    if ((userName != null) && (userName.length() > 0) &&
-        (!user.getUsername().equals(newUserName))) {
-      user.setUsername(newUserName);
-    }
+  public void update(User existingUser, User newUser) {
+    existingUser.setUsername(newUser.getUsername());
+    /* password input by end user is plain text, encrypt it */
+    existingUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
+    userRepository.save(existingUser);
   }
 
   public void delete(String userName) {
     User user = find(userName);
-    userRepository.delete(user);
+
+    if (user != null) {
+      userRepository.delete(user);
+    }
   }
 }

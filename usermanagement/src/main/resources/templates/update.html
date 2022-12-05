@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/header :: myheader}">
+  <title>Update Page</title>
+</head>
+<body>
+<nav th:insert="~{fragments/navbar :: mynavbar}"></nav>
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <div th:if="${param.success}"
+           class="alert alert-info">
+        You have successfully updated the user
+      </div>
+      <h2 class="form-signin-heading">Update User</h2>
+      <form th:action="@{/api/v1/users/update}" method="post"
+            th:object="${user}"
+            class="form-signin">
+        <label for="email" class="sr-only">Email</label>
+        <p>
+          <input type="email" id="email" name="username"
+                 class="form-control"
+                 placeholder="E-mail" required autofocus=""
+                 th:field="*{username}">
+        <p th:if="${#fields.hasErrors('username')}"
+           th:errorclass="error" th:errors="*{username}">
+        </p>
+        <label for="password" class="sr-only">Password</label>
+        <p>
+          <input type="password" id="password" name="password"
+                 class="form-control"
+                 placeholder="Password" required th:field="*{password}">
+        </p>
+        <p th:if="${#fields.hasErrors('password')}"
+           th:errorclass="error" th:errors="*{password}">
+        </p>
+        <p>
+          <button class="btn btn-primary btn-block mt-3" type="submit">
+            Update
+          </button>
+          </span>
+        </p>
+      </form>
+      <input type="hidden" th:name="${_csrf.parameterName}"
+             th:value="${_csrf.token}"/>
+    </div>
+  </div>
+  <div th:insert="~{fragments/footer :: foot}"></div>
+</div>
+</body>
+</html>

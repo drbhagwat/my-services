@@ -69,7 +69,7 @@ public class RegistrationController {
     }
   }
 
-  private int getNumberOfUsers() {
+  public int getNumberOfUsers() {
     // get the number of users in the current system
     return userService.getAll().size();
   }
