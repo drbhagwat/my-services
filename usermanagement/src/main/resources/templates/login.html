@@ -13,24 +13,29 @@
           out
         </div>
       </div>
-      
+      <div th:if="${param.error}"
+           class="alert alert-danger">
+        This user does not exist in our system. Please click the
+        registration link, to register him/her first.
+      </div>
       <h2 class="form-signin-heading">Login</h2>
-      
-      <form th:action="@{/login}" method="post" class="form-signin">
+      <form th:action="@{/login}" method="post" th:object="${user}"
+            class="form-signin">
         <p>
-          <label for="username" class="sr-only">Email</label>
-          <input type="email" id="username" name="username"
+          <label for="email" class="sr-only">Email</label>
+          <input type="email" id="email" name="username"
                  class="form-control" placeholder="Enter E-mail here"
-                 required autofocus="">
+                 required autofocus="" th:field="*{username}">
         </p>
         <label for="password" class="sr-only">Password</label>
         <input type="password" id="password" name="password"
                class="form-control"
-               placeholder="Enter Password here" required>
+               placeholder="Enter Password here" required
+               th:field="*{password}">
         <p>
           <button class="btn btn-primary btn-block mt-3" type="submit"> Login
           </button>
-          <span>New User? <a th:href="@{/register}">Register here</a>
+          <span>New User?<a th:href="@{/register}">Register here</a>
       </span>
         </p>
       </form>

@@ -30,12 +30,17 @@
                  class="form-control"
                  placeholder="E-mail" required autofocus=""
                  th:field="*{username}">
+        <p th:if="${#fields.hasErrors('username')}"
+           th:errorclass="error" th:errors="*{username}">
         </p>
         <label for="password" class="sr-only">Password</label>
         <p>
           <input type="password" id="password" name="password"
                  class="form-control"
                  placeholder="Password" required th:field="*{password}">
+        </p>
+        <p th:if="${#fields.hasErrors('password')}"
+           th:errorclass="error" th:errors="*{password}">
         </p>
         <p>
         <div th:if="${numberOfUsers != 0}">

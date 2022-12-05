@@ -1,8 +1,10 @@
 package com.mycompany.app.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,10 +25,13 @@ public class User implements UserDetails {
   @Id
   @NotEmpty
   @NotNull
+  @Email
   private String username;
 
-  @NotEmpty
-  @NotNull
+  @NotEmpty(message = "password cannot be empty")
+  @NotNull(message = "password cannot be null")
+  @Size(min = 8, message = "password should have at least " +
+      " 8 characters")
   private String password;
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval =

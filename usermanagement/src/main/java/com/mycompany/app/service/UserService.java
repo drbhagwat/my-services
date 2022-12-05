@@ -43,7 +43,7 @@ public class UserService implements UserDetailsService {
         userRepository.findById(userName);
 
     if (optionalUser.isEmpty()) {
-      throw new UserNotFoundException(userName);
+      return null;
     }
     return optionalUser.get();
   }
@@ -56,13 +56,13 @@ public class UserService implements UserDetailsService {
     return userRepository.findAll();
   }
 
-  public String add(User user) {
+  public boolean add(User user) {
     String userName = user.getUsername();
     Optional<User> optionalUser =
         userRepository.findById(userName);
 
     if (!optionalUser.isEmpty()) {
-      return "User with the specified email already exists ";
+      return false;
     }
 
     /* password input by end user is plain text */
@@ -87,7 +87,7 @@ public class UserService implements UserDetailsService {
     // Save the user - this also saves the set of
     // permissions in the related child table.
     userRepository.save(user);
-    return null; // everything worked fine, return null */
+    return true; // everything worked fine, return true */
   }
 
   @Transactional

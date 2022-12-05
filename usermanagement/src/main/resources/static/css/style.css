@@ -27,3 +27,7 @@ nav ul li a {
 nav ul li a:hover {
     color: #683aa4;
 }
+
+.error {
+    color: red;
+}
