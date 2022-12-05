@@ -1,6 +1,5 @@
 package com.mycompany.app.service;
 
-import com.mycompany.app.exception.UserNotFoundException;
 import com.mycompany.app.model.AppGrantedAuthority;
 import com.mycompany.app.model.User;
 import com.mycompany.app.repository.UserRepository;
