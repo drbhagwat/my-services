@@ -43,7 +43,7 @@
            th:errorclass="error" th:errors="*{password}">
         </p>
         <p>
-        <div th:if="${numberOfUsers != 0}">
+        <div th:if="${numberOfUsers >= 1}">
           Select Role
           <select th:field="*{role}" id="dropDownList">
             <option th:each="role : ${roles}"

@@ -1,5 +1,6 @@
 package com.mycompany.app.controller;
 
+import com.mycompany.app.model.Role;
 import com.mycompany.app.model.User;
 import com.mycompany.app.service.UserService;
 import jakarta.validation.Valid;
@@ -10,6 +11,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.util.stream.Stream;
 
 @Controller
 @RequestMapping("/api/v1/users")
@@ -28,11 +31,12 @@ public class UserController {
     return "users";
   }
 
-  @GetMapping("/get/{userName}")
+  @GetMapping("/get")
   @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
-  public String get(Model model, @PathVariable("userName") String userName) {
-    model.addAttribute("user", userService.get(userName));
-    return "user";
+  public ModelAndView get(@RequestParam String userName) {
+    ModelAndView modelAndView = new ModelAndView("user");
+    modelAndView.addObject("user", userService.get(userName));
+    return modelAndView;
   }
 
   @GetMapping("/add")
@@ -45,9 +49,19 @@ public class UserController {
   @GetMapping("/update")
   @PreAuthorize("hasAuthority('user:write')")
   public ModelAndView update(@RequestParam String userName) {
-    User user = userService.find(userName);
     ModelAndView modelAndView = new ModelAndView("update");
+    int numberOfUsers = userService.getAll().size();
+    modelAndView.addObject("numberOfUsers", numberOfUsers);
+    User user = userService.find(userName);
     modelAndView.addObject("user", user);
+    /*
+      dropdown-list of all roles (defined for all user types) in the system
+      is populated (but only for second and subsequent users). As of now,
+      ADMIN, and USER roles exist. This could be extended to other types of
+      users. Note that the very first user should be ADMIN
+     */
+    modelAndView.addObject("roles",
+        Stream.of(Role.values()).map(Role::name).toList());
     return modelAndView;
   }
 
@@ -60,13 +74,13 @@ public class UserController {
       model.addAttribute("user", user);
       return "update";
     }
-    userService.update(userService.find(user.getUsername()), user);
-    return "redirect:/api/v1/users";
+    userService.update(user);
+    return "redirect:/api/v1/users?success";
   }
 
-  @GetMapping("/delete/{userName}")
+  @GetMapping("/delete")
   @PreAuthorize("hasAuthority('user:write')")
-  public String delete(@PathVariable("userName") String userName) {
+  public String delete(@RequestParam String userName) {
     userService.delete(userName);
     return "redirect:/api/v1/users";
   }

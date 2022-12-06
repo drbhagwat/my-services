@@ -29,7 +29,7 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain
   securityFilterChain(HttpSecurity http) throws Exception {
-    final String[] publicUrls = {"/login", "/register", "/css/**",
+    final String[] publicUrls = {"/login**", "/register", "/css/**",
         "/js/**", "/images/**"};
     final String listOfUsersUrl = "/api/v1/users";
     final String logoutUrl = "/logout";

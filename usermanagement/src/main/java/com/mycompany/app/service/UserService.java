@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -58,6 +59,36 @@ public class UserService implements UserDetailsService {
     if (!optionalUser.isEmpty()) {
       return false;
     }
+    init(user);
+    // When you save the user, the set of permissions in the related
+    // child table are also automatically saved.
+    userRepository.save(user);
+    return true; // everything worked fine, so return true */
+  }
+
+  @Transactional
+  public void update(User newUser) {
+    String newUsername = newUser.getUsername();
+    User existingUser = userRepository.findById(newUsername).get();
+    /* password input by end user is plain text, encrypt it */
+    existingUser.setPassword(passwordEncoder.encode(newUsername));
+
+    if( getAll().size() > 1) {
+      existingUser.setRole(newUser.getRole()); // role might have changed
+      updatePermissions(existingUser);
+    }
+    userRepository.save(existingUser);
+  }
+
+  public void delete(String userName) {
+    User user = find(userName);
+
+    if (user != null) {
+      userRepository.delete(user);
+    }
+  }
+
+  public void init(User user) {
     /* password input by end user is plain text, encrypt it */
     user.setPassword(passwordEncoder.encode(user.getPassword()));
     /* set other fields to true by default */
@@ -77,25 +108,18 @@ public class UserService implements UserDetailsService {
     for (AppGrantedAuthority appGrantedAuthority : appGrantedAuthorities) {
       user.addAppGrantedAuthority(appGrantedAuthority);
     }
-    // Save user - this also saves the set of permissions in the related
-    // child table.
-    userRepository.save(user);
-    return true; // everything worked fine, so return true */
   }
 
-  @Transactional
-  public void update(User existingUser, User newUser) {
-    existingUser.setUsername(newUser.getUsername());
-    /* password input by end user is plain text, encrypt it */
-    existingUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
-    userRepository.save(existingUser);
-  }
+  public void updatePermissions(User user) {
+    Collection<AppGrantedAuthority> appGrantedAuthorities = null;
 
-  public void delete(String userName) {
-    User user = find(userName);
-
-    if (user != null) {
-      userRepository.delete(user);
+    if (user.getRole().equals("USER")) {
+      appGrantedAuthorities = USER.getGrantedAuthorities();
+    } else {
+      appGrantedAuthorities = ADMIN.getGrantedAuthorities();
+    }
+    for (AppGrantedAuthority appGrantedAuthority : appGrantedAuthorities) {
+      user.addAppGrantedAuthority(appGrantedAuthority);
     }
   }
 }

@@ -28,19 +28,16 @@ public class RegistrationController {
   public String register(Model model) {
     int numberOfUsers = getNumberOfUsers();
     model.addAttribute("numberOfUsers", numberOfUsers);
+    model.addAttribute("user", new User());
     /*
-      dropdown-list of all user roles in the system is populated only for
-      second and subsequent users only
-    */
-    if (numberOfUsers != 0) {
-    /*
-      dropdown-list is populated with all roles of users in the system
-      For now only ADMIN, and USER but could be extended to other types of
-      users.
+      dropdown-list of all roles (defined for all user types) in the system
+      is populated (but only for second and subsequent users). As of now,
+      ADMIN, and USER roles exist. This could be extended to other types of
+      users. Note that the very first user should be ADMIN
      */
+    if (numberOfUsers != 0) {
       model.addAttribute("roles", Stream.of(Role.values()).map(Role::name).toList());
     }
-    model.addAttribute("user", new User());
     return "register";
   }
 

@@ -8,6 +8,15 @@
 <div class="container">
   <div class="row">
     <div class="col">
+      <div th:if="${param.success}"
+           class="alert alert-info">
+        You have successfully updated the user
+      </div>
+      <div th:if="${param.newUserExists}"
+           class="alert alert-danger">
+        The email specified by you already exists in our system. Kindly
+        update with a different e-mail.
+      </div>
       <a class="btn btn-primary mb-3"
          th:href="@{/register}">
         Add User</a>
@@ -27,12 +36,12 @@
           <td th:text="${user.username}"></td>
           <td>
             <a class="btn btn-primary"
-               th:href="@{/api/v1/users/get/{uname}(uname=${user.username})}">
+               th:href="@{/api/v1/users/get(userName=${user.username})}">
               View</a>
           </td>
           <td>
             <a class="btn btn-danger"
-               th:href="@{/api/v1/users/delete/{uname}(uname=${user.username})}">
+               th:href="@{/api/v1/users/delete(userName=${user.username})}">
               Delete</a>
           </td>
           <td>
