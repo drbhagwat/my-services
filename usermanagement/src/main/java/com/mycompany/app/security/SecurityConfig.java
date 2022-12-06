@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,7 +15,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
-@EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
   private final PasswordEncoder passwordEncoder;
   private final UserService userService;
@@ -29,7 +30,7 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain
   securityFilterChain(HttpSecurity http) throws Exception {
-    final String[] publicUrls = {"/login**", "/register", "/css/**",
+    final String[] publicUrls = {"/login", "/register", "/css/**",
         "/js/**", "/images/**"};
     final String listOfUsersUrl = "/api/v1/users";
     final String logoutUrl = "/logout";

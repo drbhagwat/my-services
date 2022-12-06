@@ -6,6 +6,7 @@ import com.mycompany.app.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -25,14 +26,14 @@ public class UserController {
   }
 
   @GetMapping()
-  @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
+  @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
   public String getAll(Model model) {
     model.addAttribute("users", userService.getAll());
     return "users";
   }
 
   @GetMapping("/get")
-  @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
+  @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
   public ModelAndView get(@RequestParam String userName) {
     ModelAndView modelAndView = new ModelAndView("user");
     modelAndView.addObject("user", userService.get(userName));
@@ -40,36 +41,43 @@ public class UserController {
   }
 
   @GetMapping("/add")
-  @PreAuthorize("hasAuthority('user:write')")
+  @PreAuthorize("hasRole('ADMIN')")
   public String add(Model model) {
     model.addAttribute("user", new User());
     return "/register";
   }
 
   @GetMapping("/update")
-  @PreAuthorize("hasAuthority('user:write')")
-  public ModelAndView update(@RequestParam String userName) {
-    ModelAndView modelAndView = new ModelAndView("update");
-    int numberOfUsers = userService.getAll().size();
-    modelAndView.addObject("numberOfUsers", numberOfUsers);
-    User user = userService.find(userName);
-    modelAndView.addObject("user", user);
+  @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+  public String update(@RequestParam String userName, Model model) {
+    User loggedInUser =
+        (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    if (!userName.equals(loggedInUser.getUsername())) {
+      return "redirect:/api/v1/users";
+    } else {
+      int numberOfUsers = userService.getAll().size();
+      model.addAttribute("numberOfUsers", numberOfUsers);
+      User user = userService.find(userName);
+      model.addAttribute("user", user);
     /*
       dropdown-list of all roles (defined for all user types) in the system
       is populated (but only for second and subsequent users). As of now,
       ADMIN, and USER roles exist. This could be extended to other types of
       users. Note that the very first user should be ADMIN
      */
-    modelAndView.addObject("roles",
-        Stream.of(Role.values()).map(Role::name).toList());
-    return modelAndView;
+      if (!user.getRole().equals("USER")) {
+        model.addAttribute("roles",
+            Stream.of(Role.values()).map(Role::name).toList());
+      }
+    }
+    return "update";
   }
 
   @PostMapping("/update")
-  @PreAuthorize("hasAuthority('user:write')")
+  @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
   public String update(@Valid User user, BindingResult bindingResult,
                        Model model) {
-
     if (bindingResult.hasErrors()) {
       model.addAttribute("user", user);
       return "update";
@@ -79,7 +87,7 @@ public class UserController {
   }
 
   @GetMapping("/delete")
-  @PreAuthorize("hasAuthority('user:write')")
+  @PreAuthorize("hasRole('ADMIN')")
   public String delete(@RequestParam String userName) {
     userService.delete(userName);
     return "redirect:/api/v1/users";

@@ -74,7 +74,10 @@ public class UserService implements UserDetailsService {
     existingUser.setPassword(passwordEncoder.encode(newUsername));
 
     if( getAll().size() > 1) {
-      existingUser.setRole(newUser.getRole()); // role might have changed
+
+      if(newUser.getRole() != null) {
+        existingUser.setRole(newUser.getRole()); // role might have changed
+      }
       updatePermissions(existingUser);
     }
     userRepository.save(existingUser);
