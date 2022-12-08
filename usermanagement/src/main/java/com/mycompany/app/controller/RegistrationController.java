@@ -1,6 +1,5 @@
 package com.mycompany.app.controller;
 
-import com.mycompany.app.model.Role;
 import com.mycompany.app.model.User;
 import com.mycompany.app.service.UserService;
 import jakarta.validation.Valid;
@@ -12,7 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.stream.Stream;
+import java.util.List;
 
 @Controller
 @RequestMapping("/register")
@@ -36,7 +35,7 @@ public class RegistrationController {
       users. Note that the very first user should be ADMIN
      */
     if (numberOfUsers != 0) {
-      model.addAttribute("roles", Stream.of(Role.values()).map(Role::name).toList());
+      model.addAttribute("roles", List.of("ADMIN", "USER"));
     }
     return "register";
   }

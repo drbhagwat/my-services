@@ -1,11 +1,13 @@
-package com.mycompany.app.security;
+package com.mycompany.app.config;
 
+import lombok.NoArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
+@NoArgsConstructor
 public class PasswordConfig {
   @Bean
   public PasswordEncoder passwordEncoder() {

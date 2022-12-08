@@ -1,26 +1,37 @@
 package com.mycompany.app.model;
 
-import com.google.common.collect.Sets;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import static com.mycompany.app.model.Permission.USER_READ;
-import static com.mycompany.app.model.Permission.USER_WRITE;
-
-@AllArgsConstructor
 @Getter
-public enum Role {
-  ADMIN(Sets.newHashSet(USER_READ, USER_WRITE)),
-  USER(Sets.newHashSet(USER_READ));
-  private final Set<Permission> permissions;
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+public class Role {
+  @Id
+  @NotNull(message = "role cannot be null")
+  @NotEmpty(message = "role cannot be empty")
+  private String name;
 
-  public Set<AppGrantedAuthority> getGrantedAuthorities() {
-    Set<AppGrantedAuthority> appGrantedAuthorities =
-        getPermissions().stream().map(permission -> new AppGrantedAuthority(permission.getPermission())).collect(Collectors.toSet());
-    appGrantedAuthorities.add(new AppGrantedAuthority("ROLE_" + this.name()));
-    return appGrantedAuthorities;
+  @ManyToMany(fetch = FetchType.LAZY,
+      cascade = {
+          CascadeType.PERSIST,
+          CascadeType.MERGE
+      },
+      mappedBy = "roles")
+  private Set<User> users = new HashSet<>();
+
+  public Role(String name) {
+    this.name = name;
   }
 }

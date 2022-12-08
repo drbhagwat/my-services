@@ -1,30 +1,23 @@
 package com.mycompany.app.service;
 
-import com.mycompany.app.model.AppGrantedAuthority;
+import com.mycompany.app.model.Role;
 import com.mycompany.app.model.User;
 import com.mycompany.app.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-
-import static com.mycompany.app.model.Role.ADMIN;
-import static com.mycompany.app.model.Role.USER;
 
 @Service
 public class UserService implements UserDetailsService {
   private final PasswordEncoder passwordEncoder;
   private final UserRepository userRepository;
 
-  @Autowired
   public UserService(PasswordEncoder passwordEncoder,
                      UserRepository userRepository) {
     this.passwordEncoder = passwordEncoder;
@@ -68,17 +61,14 @@ public class UserService implements UserDetailsService {
 
   @Transactional
   public void update(User newUser) {
-    String newUsername = newUser.getUsername();
-    User existingUser = userRepository.findById(newUsername).get();
+    String userName = newUser.getUsername();
+    User existingUser =
+        userRepository.findById(userName).get();
     /* password input by end user is plain text, encrypt it */
-    existingUser.setPassword(passwordEncoder.encode(newUsername));
+    existingUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
 
-    if( getAll().size() > 1) {
-
-      if(newUser.getRole() != null) {
-        existingUser.setRole(newUser.getRole()); // role might have changed
-      }
-      updatePermissions(existingUser);
+    if ((getAll().size() > 1) && (newUser.getRole() != null)) {
+      existingUser.setRole(newUser.getRole()); // role might have changed
     }
     userRepository.save(existingUser);
   }
@@ -99,30 +89,6 @@ public class UserService implements UserDetailsService {
     user.setAccountNonLocked(true);
     user.setEnabled(true);
     user.setCredentialsNonExpired(true);
-
-    Set<AppGrantedAuthority> appGrantedAuthorities = null;
-
-    if (user.getRole().equals("USER")) {
-      appGrantedAuthorities = USER.getGrantedAuthorities();
-    } else {
-      appGrantedAuthorities = ADMIN.getGrantedAuthorities();
-    }
-
-    for (AppGrantedAuthority appGrantedAuthority : appGrantedAuthorities) {
-      user.addAppGrantedAuthority(appGrantedAuthority);
-    }
-  }
-
-  public void updatePermissions(User user) {
-    Collection<AppGrantedAuthority> appGrantedAuthorities = null;
-
-    if (user.getRole().equals("USER")) {
-      appGrantedAuthorities = USER.getGrantedAuthorities();
-    } else {
-      appGrantedAuthorities = ADMIN.getGrantedAuthorities();
-    }
-    for (AppGrantedAuthority appGrantedAuthority : appGrantedAuthorities) {
-      user.addAppGrantedAuthority(appGrantedAuthority);
-    }
+    user.getRoles().add(new Role("ROLE_" + user.getRole()));
   }
 }

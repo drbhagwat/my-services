@@ -7,10 +7,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.util.concurrent.TimeUnit;
 
@@ -33,14 +31,12 @@ public class SecurityConfig {
     final String[] publicUrls = {"/login", "/register", "/css/**",
         "/js/**", "/images/**"};
     final String listOfUsersUrl = "/api/v1/users";
-    final String logoutUrl = "/logout";
-    final String logoutSuccessUrl = "/login?logout";
+    final String logoutSuccessUrl = "/login";
     final String secret = "deepsecretoverridingspringdefault";
     final String[] cookies = {"remember-me", "JSESSIONID"};
     final int rememberMeValidityInSeconds = (int) TimeUnit.DAYS.toSeconds(21);
 
     http.authenticationProvider(daoAuthenticationProvider());
-
     return
         http.authorizeHttpRequests()
             .requestMatchers(publicUrls)
@@ -59,7 +55,6 @@ public class SecurityConfig {
             .logout()
             .clearAuthentication(true)
             .invalidateHttpSession(true)
-            .logoutRequestMatcher(new AntPathRequestMatcher(logoutUrl))
             .logoutSuccessUrl(logoutSuccessUrl)
             .deleteCookies(cookies)
             .and().build();

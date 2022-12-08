@@ -9,10 +9,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.*;
 
 @Entity
 /* user is a reserved word in postgreSQL and hence using users */
@@ -34,20 +35,29 @@ public class User implements UserDetails {
       " 8 characters")
   private String password;
 
-  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval =
-      true, fetch = FetchType.EAGER)
-  private Collection<AppGrantedAuthority> appGrantedAuthorities =
-      new HashSet<>();
-
   private boolean accountNonExpired;
   private boolean accountNonLocked;
   private boolean enabled;
   private boolean credentialsNonExpired;
+
+  @Transient
   private String role;
 
+  @ManyToMany(fetch = FetchType.LAZY,
+      cascade = {
+          CascadeType.PERSIST,
+          CascadeType.MERGE
+      })
+  @JoinTable(name = "users_roles",
+      joinColumns = {@JoinColumn(name = "username")},
+      inverseJoinColumns = {@JoinColumn(name = "name")})
+  private Collection<Role> roles = new HashSet<>();
+
   @Override
-  public Collection<AppGrantedAuthority> getAuthorities() {
-    return appGrantedAuthorities;
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
+    grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + role));
+    return grantedAuthorities;
   }
 
   @Override
@@ -80,8 +90,13 @@ public class User implements UserDetails {
     return enabled;
   }
 
-  public void addAppGrantedAuthority(AppGrantedAuthority appGrantedAuthority) {
-    appGrantedAuthorities.add(appGrantedAuthority);
-    appGrantedAuthority.setUser(this);
+  public void addRole(Role role) {
+    this.roles.add(role);
+    role.getUsers().add(this);
+  }
+
+  public void removeRole(Role role) {
+    this.roles.remove(role);
+    role.getUsers().remove(this);
   }
 }

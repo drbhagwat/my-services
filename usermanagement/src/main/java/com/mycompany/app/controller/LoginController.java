@@ -13,6 +13,6 @@ public class LoginController {
 
   @PostMapping("/login")
   public String login() {
-    return "redirect:/api/v1/users";
+    return "users";
   }
 }

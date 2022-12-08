@@ -1,6 +1,5 @@
 package com.mycompany.app.controller;
 
-import com.mycompany.app.model.Role;
 import com.mycompany.app.model.User;
 import com.mycompany.app.service.UserService;
 import jakarta.validation.Valid;
@@ -13,7 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.stream.Stream;
+import java.util.List;
 
 @Controller
 @RequestMapping("/api/v1/users")
@@ -25,14 +24,13 @@ public class UserController {
     this.userService = userService;
   }
 
-  @GetMapping()
-  @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+  @GetMapping
   public String getAll(Model model) {
     model.addAttribute("users", userService.getAll());
     return "users";
   }
 
-  @GetMapping("/get")
+  @GetMapping("get")
   @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
   public ModelAndView get(@RequestParam String userName) {
     ModelAndView modelAndView = new ModelAndView("user");
@@ -40,21 +38,21 @@ public class UserController {
     return modelAndView;
   }
 
-  @GetMapping("/add")
+  @GetMapping("add")
   @PreAuthorize("hasRole('ADMIN')")
   public String add(Model model) {
     model.addAttribute("user", new User());
     return "/register";
   }
 
-  @GetMapping("/update")
-  @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+  @GetMapping("update")
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
   public String update(@RequestParam String userName, Model model) {
     User loggedInUser =
         (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
     if (!userName.equals(loggedInUser.getUsername())) {
-      return "redirect:/api/v1/users";
+      return "redirect:/api/v1/users"; // for now it is ignored...
     } else {
       int numberOfUsers = userService.getAll().size();
       model.addAttribute("numberOfUsers", numberOfUsers);
@@ -67,27 +65,26 @@ public class UserController {
       users. Note that the very first user should be ADMIN
      */
       if (!user.getRole().equals("USER")) {
-        model.addAttribute("roles",
-            Stream.of(Role.values()).map(Role::name).toList());
+        model.addAttribute("roles", List.of("ADMIN", "USER"));
       }
     }
     return "update";
   }
 
-  @PostMapping("/update")
+  @PostMapping("update")
   @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-  public String update(@Valid User user, BindingResult bindingResult,
+  public String update(@Valid User newUser, BindingResult bindingResult,
                        Model model) {
     if (bindingResult.hasErrors()) {
-      model.addAttribute("user", user);
+      model.addAttribute("user", newUser);
       return "update";
     }
-    userService.update(user);
+    userService.update(newUser);
     return "redirect:/api/v1/users?success";
   }
 
-  @GetMapping("/delete")
-  @PreAuthorize("hasRole('ADMIN')")
+  @GetMapping("delete")
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
   public String delete(@RequestParam String userName) {
     userService.delete(userName);
     return "redirect:/api/v1/users";
