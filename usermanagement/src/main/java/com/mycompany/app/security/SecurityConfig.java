@@ -36,6 +36,7 @@ public class SecurityConfig {
     final String[] cookies = {"remember-me", "JSESSIONID"};
     final int rememberMeValidityInSeconds = (int) TimeUnit.DAYS.toSeconds(21);
 
+
     http.authenticationProvider(daoAuthenticationProvider());
     return
         http.authorizeHttpRequests()
