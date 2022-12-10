@@ -2,6 +2,7 @@ package com.mycompany.app.service;
 
 import com.mycompany.app.model.Role;
 import com.mycompany.app.model.User;
+import com.mycompany.app.repository.RoleRepository;
 import com.mycompany.app.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,11 +18,13 @@ import java.util.Optional;
 public class UserService implements UserDetailsService {
   private final PasswordEncoder passwordEncoder;
   private final UserRepository userRepository;
+  private final RoleRepository roleRepository;
 
   public UserService(PasswordEncoder passwordEncoder,
-                     UserRepository userRepository) {
+                     UserRepository userRepository, RoleRepository roleRepository) {
     this.passwordEncoder = passwordEncoder;
     this.userRepository = userRepository;
+    this.roleRepository = roleRepository;
   }
 
   @Override
@@ -77,6 +80,14 @@ public class UserService implements UserDetailsService {
     User user = find(userName);
 
     if (user != null) {
+      Role role = user.getRoles().stream().findFirst().get();
+
+      // if this is the last user and only one role remains, delete that role
+      if ((userRepository.findAll().size() == 1)
+          && (roleRepository.findAll().size() == 1)) {
+        roleRepository.delete(role);
+      }
+      user.removeRole(role);
       userRepository.delete(user);
     }
   }

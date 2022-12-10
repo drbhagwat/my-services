@@ -23,12 +23,7 @@ public class Role {
   @NotEmpty(message = "role cannot be empty")
   private String name;
 
-  @ManyToMany(fetch = FetchType.EAGER,
-      cascade = {
-          CascadeType.PERSIST,
-          CascadeType.MERGE
-      },
-      mappedBy = "roles")
+  @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL}, mappedBy = "roles")
   private Set<User> users = new HashSet<>();
 
   public Role(String name) {

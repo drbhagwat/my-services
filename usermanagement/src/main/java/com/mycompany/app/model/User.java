@@ -43,11 +43,7 @@ public class User implements UserDetails {
   @Transient
   private String role;
 
-  @ManyToMany(fetch = FetchType.EAGER,
-      cascade = {
-          CascadeType.PERSIST,
-          CascadeType.MERGE
-      })
+  @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
   @JoinTable(name = "users_roles",
       joinColumns = {@JoinColumn(name = "username")},
       inverseJoinColumns = {@JoinColumn(name = "name")})
@@ -58,7 +54,7 @@ public class User implements UserDetails {
     List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
     Collection<Role> roles = this.getRoles();
 
-    for(Role role: roles) {
+    for (Role role : roles) {
       grantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
     }
     return grantedAuthorities;
