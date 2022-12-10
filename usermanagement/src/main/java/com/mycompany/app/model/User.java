@@ -43,7 +43,7 @@ public class User implements UserDetails {
   @Transient
   private String role;
 
-  @ManyToMany(fetch = FetchType.LAZY,
+  @ManyToMany(fetch = FetchType.EAGER,
       cascade = {
           CascadeType.PERSIST,
           CascadeType.MERGE
@@ -55,8 +55,12 @@ public class User implements UserDetails {
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
-    grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + role));
+    List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
+    Collection<Role> roles = this.getRoles();
+
+    for(Role role: roles) {
+      grantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
+    }
     return grantedAuthorities;
   }
 

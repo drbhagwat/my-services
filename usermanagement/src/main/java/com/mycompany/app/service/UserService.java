@@ -89,6 +89,6 @@ public class UserService implements UserDetailsService {
     user.setAccountNonLocked(true);
     user.setEnabled(true);
     user.setCredentialsNonExpired(true);
-    user.getRoles().add(new Role("ROLE_" + user.getRole()));
+    user.addRole(new Role("ROLE_" + user.getRole()));
   }
 }

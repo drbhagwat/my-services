@@ -23,7 +23,7 @@ public class Role {
   @NotEmpty(message = "role cannot be empty")
   private String name;
 
-  @ManyToMany(fetch = FetchType.LAZY,
+  @ManyToMany(fetch = FetchType.EAGER,
       cascade = {
           CascadeType.PERSIST,
           CascadeType.MERGE

@@ -5,6 +5,7 @@ import com.mycompany.app.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,13 +26,14 @@ public class UserController {
   }
 
   @GetMapping
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
   public String getAll(Model model) {
     model.addAttribute("users", userService.getAll());
     return "users";
   }
 
   @GetMapping("get")
-  @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
   public ModelAndView get(@RequestParam String userName) {
     ModelAndView modelAndView = new ModelAndView("user");
     modelAndView.addObject("user", userService.get(userName));
@@ -39,7 +41,7 @@ public class UserController {
   }
 
   @GetMapping("add")
-  @PreAuthorize("hasRole('ADMIN')")
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
   public String add(Model model) {
     model.addAttribute("user", new User());
     return "/register";
@@ -64,7 +66,7 @@ public class UserController {
       ADMIN, and USER roles exist. This could be extended to other types of
       users. Note that the very first user should be ADMIN
      */
-      if (!user.getRole().equals("USER")) {
+      if (!user.getRoles().stream().findFirst().get().getName().equals("USER")) {
         model.addAttribute("roles", List.of("ADMIN", "USER"));
       }
     }
@@ -72,7 +74,7 @@ public class UserController {
   }
 
   @PostMapping("update")
-  @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
   public String update(@Valid User newUser, BindingResult bindingResult,
                        Model model) {
     if (bindingResult.hasErrors()) {
