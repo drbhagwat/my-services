@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -20,8 +21,7 @@ public class UserService implements UserDetailsService {
   private final UserRepository userRepository;
   private final RoleRepository roleRepository;
 
-  public UserService(PasswordEncoder passwordEncoder,
-                     UserRepository userRepository, RoleRepository roleRepository) {
+  public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository, RoleRepository roleRepository) {
     this.passwordEncoder = passwordEncoder;
     this.userRepository = userRepository;
     this.roleRepository = roleRepository;
@@ -65,8 +65,7 @@ public class UserService implements UserDetailsService {
   @Transactional
   public void update(User newUser) {
     String userName = newUser.getUsername();
-    User existingUser =
-        userRepository.findById(userName).get();
+    User existingUser = userRepository.findById(userName).get();
     /* password input by end user is plain text, encrypt it */
     existingUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
 
@@ -78,18 +77,17 @@ public class UserService implements UserDetailsService {
 
   public void delete(String userName) {
     User user = find(userName);
+    // get the role of the user, currently a user can have only one role
+    Role role = user.getRoles().stream().findFirst().get();
+    // get list of users from the repo who have the same role
+    List<User> usersWithSpecificRole = userRepository.findUsersWithSpecificRole(role.getName());
 
-    if (user != null) {
-      Role role = user.getRoles().stream().findFirst().get();
-
-      // if this is the last user and only one role remains, delete that role
-      if ((userRepository.findAll().size() == 1)
-          && (roleRepository.findAll().size() == 1)) {
-        roleRepository.delete(role);
-      }
-      user.removeRole(role);
-      userRepository.delete(user);
+    // if this is the only user, delete the role to conserve some space
+    if (usersWithSpecificRole.size() == 1) {
+      roleRepository.delete(role);
     }
+    user.removeRole(role);
+    userRepository.delete(user);
   }
 
   public void init(User user) {
