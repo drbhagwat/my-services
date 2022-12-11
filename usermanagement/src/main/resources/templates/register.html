@@ -33,6 +33,9 @@
         <p th:if="${#fields.hasErrors('username')}" th:errorclass="error"
            th:errors="*{username}">
         </p>
+        <p th:if="${param.emailInvalid}" class="alert alert-danger"> Invalid
+          e-mail address. Please correct and re-register.
+        </p>
         <label for="password" class="sr-only">Password</label>
         <p>
           <input type="password" id="password" name="password"

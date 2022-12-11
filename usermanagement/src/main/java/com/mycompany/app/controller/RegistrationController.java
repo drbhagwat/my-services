@@ -4,6 +4,7 @@ import com.mycompany.app.enums.UserType;
 import com.mycompany.app.model.User;
 import com.mycompany.app.service.UserService;
 import jakarta.validation.Valid;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -46,16 +47,26 @@ public class RegistrationController {
       model.addAttribute("user", user);
       model.addAttribute("numberOfUsers", numberOfUsers);
       return "register";
-    } /*
+    }
+    boolean validEmail =
+        EmailValidator.getInstance(true).isValid(user.getUsername());
+
+    if (!validEmail) {
+      model.addAttribute("user", user);
+      model.addAttribute("numberOfUsers", numberOfUsers);
+      return "redirect:/register?emailInvalid";
+    }
+
+    /*
       dropdown-list of roles is not populated for the very first-user.
       First-user should always be an ADMIN.
-      */
+    */
     if (numberOfUsers == 0) {
       user.setRole(UserType.ADMIN.getUserRole());
     }
     boolean isUserAdded = userService.add(user);
 
-    return isUserAdded? "redirect:/register?success": "redirect:/register" +
+    return isUserAdded ? "redirect:/register?success" : "redirect:/register" +
         "?emailExists";
   }
 
