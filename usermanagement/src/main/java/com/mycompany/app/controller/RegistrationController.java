@@ -1,9 +1,9 @@
 package com.mycompany.app.controller;
 
+import com.mycompany.app.enums.UserType;
 import com.mycompany.app.model.User;
 import com.mycompany.app.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -11,14 +11,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
-
 @Controller
 @RequestMapping("/register")
 public class RegistrationController {
   private final UserService userService;
 
-  @Autowired
   public RegistrationController(UserService userService) {
     this.userService = userService;
   }
@@ -29,13 +26,13 @@ public class RegistrationController {
     model.addAttribute("numberOfUsers", numberOfUsers);
     model.addAttribute("user", new User());
     /*
-      dropdown-list of all roles (defined for all user types) in the system
-      is populated (but only for second and subsequent users). As of now,
-      ADMIN, and USER roles exist. This could be extended to other types of
-      users. Note that the very first user should be ADMIN
+      dropdown-list of all user types in the system is populated (but for
+      the second and subsequent users only). As of now, ADMIN, and USER
+      types exist. This could be extended to other types of users. Note that
+      the very first user should be ADMIN and that is enforced by the system.
      */
     if (numberOfUsers != 0) {
-      model.addAttribute("roles", List.of("ADMIN", "USER"));
+      model.addAttribute("roles", UserType.values());
     }
     return "register";
   }
@@ -54,19 +51,16 @@ public class RegistrationController {
       First-user should always be an ADMIN.
       */
     if (numberOfUsers == 0) {
-      user.setRole("ADMIN");
+      user.setRole(UserType.ADMIN.getUserRole());
     }
     boolean isUserAdded = userService.add(user);
 
-    if (isUserAdded) {
-      return "redirect:/register?success";
-    } else {
-      return "redirect:/register?emailExists";
-    }
+    return isUserAdded? "redirect:/register?success": "redirect:/register" +
+        "?emailExists";
   }
 
   public int getNumberOfUsers() {
-    // get the number of users in the current system
+    // get # users in the system
     return userService.getAll().size();
   }
 }
