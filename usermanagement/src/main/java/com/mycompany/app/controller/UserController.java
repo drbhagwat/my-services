@@ -49,10 +49,10 @@ public class UserController {
   @GetMapping("update")
   @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
   public String update(@RequestParam String userName, Model model) {
-    User loggedInUser =
-        (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    String loggedInUser =
+        SecurityContextHolder.getContext().getAuthentication().getName();
 
-    if (!userName.equals(loggedInUser.getUsername())) {
+    if (!userName.equals(loggedInUser)) {
       return "redirect:/api/v1/users"; // for now it is ignored...
     } else {
       int numberOfUsers = userService.getAll().size();

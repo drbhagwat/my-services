@@ -20,14 +20,17 @@ public class UserService implements UserDetailsService {
   private final UserRepository userRepository;
   private final RoleRepository roleRepository;
 
-  public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository, RoleRepository roleRepository) {
+  public UserService(PasswordEncoder passwordEncoder,
+                     UserRepository userRepository,
+                     RoleRepository roleRepository) {
     this.passwordEncoder = passwordEncoder;
     this.userRepository = userRepository;
     this.roleRepository = roleRepository;
   }
 
   @Override
-  public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+  public UserDetails loadUserByUsername(String userName)
+      throws UsernameNotFoundException {
     return userRepository.findById(userName)
         .orElseThrow(() -> new UsernameNotFoundException(String.format("User " +
             "name %s not found", userName)));
@@ -79,7 +82,8 @@ public class UserService implements UserDetailsService {
     // get the role of the user, currently a user can have only one role
     Role role = user.getRoles().stream().findFirst().get();
     // get list of users from the repo who have the same role
-    List<User> usersWithSpecificRole = userRepository.findUsersWithSpecificRole(role.getName());
+    List<User> usersWithSpecificRole =
+        userRepository.findUsersWithSpecificRole(role.getName());
 
     // if this is the only user, delete the role to conserve some space
     if (usersWithSpecificRole.size() == 1) {

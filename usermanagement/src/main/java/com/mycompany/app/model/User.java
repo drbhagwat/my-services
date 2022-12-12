@@ -1,5 +1,6 @@
 package com.mycompany.app.model;
 
+import com.mycompany.app.audit.Audit;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
@@ -23,7 +24,7 @@ import java.util.*;
 @AllArgsConstructor
 @Getter
 @Setter
-public class User implements UserDetails {
+public class User extends Audit implements UserDetails {
   @Id
   @NotNull(message = "email cannot be null")
   @NotEmpty(message = "email cannot be empty")

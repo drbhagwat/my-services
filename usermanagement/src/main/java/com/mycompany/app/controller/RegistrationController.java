@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/register")
 public class RegistrationController {
   private final UserService userService;
+  private static final String NUMBER_OF_USERS = "numberOfUsers";
 
   public RegistrationController(UserService userService) {
     this.userService = userService;
@@ -24,7 +25,7 @@ public class RegistrationController {
   @GetMapping
   public String register(Model model) {
     int numberOfUsers = getNumberOfUsers();
-    model.addAttribute("numberOfUsers", numberOfUsers);
+    model.addAttribute(NUMBER_OF_USERS, numberOfUsers);
     model.addAttribute("user", new User());
     /*
       dropdown-list of all user types in the system is populated (but for
@@ -45,7 +46,7 @@ public class RegistrationController {
 
     if (bindingResult.hasErrors()) {
       model.addAttribute("user", user);
-      model.addAttribute("numberOfUsers", numberOfUsers);
+      model.addAttribute(NUMBER_OF_USERS, numberOfUsers);
       return "register";
     }
     boolean validEmail =
@@ -53,7 +54,7 @@ public class RegistrationController {
 
     if (!validEmail) {
       model.addAttribute("user", user);
-      model.addAttribute("numberOfUsers", numberOfUsers);
+      model.addAttribute(NUMBER_OF_USERS, numberOfUsers);
       return "redirect:/register?emailInvalid";
     }
 
