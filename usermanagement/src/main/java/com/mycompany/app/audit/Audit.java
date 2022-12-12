@@ -17,16 +17,15 @@ import java.util.Date;
 public class Audit {
   @Temporal(TemporalType.TIMESTAMP)
   @CreatedDate
-  private Date createdTime;
+  public Date createdTime;
 
   @CreatedBy
-  private String createdBy;
+  public String createdBy;
 
   @LastModifiedDate
   @Temporal(TemporalType.TIMESTAMP)
-  private Date lastModifiedTime;
+  public Date lastModifiedTime;
 
   @LastModifiedBy
-  private String modifiedBy;
-
+  public String modifiedBy;
 }

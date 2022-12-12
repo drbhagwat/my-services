@@ -1,5 +1,6 @@
 package com.mycompany.app.model;
 
+import com.mycompany.app.audit.Audit;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -16,7 +17,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Role {
+public class Role extends Audit {
   @Id
   @NotNull(message = "role cannot be null")
   @NotEmpty(message = "role cannot be empty")

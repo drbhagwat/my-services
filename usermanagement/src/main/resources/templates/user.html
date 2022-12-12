@@ -13,19 +13,21 @@
         <thead>
         <tr>
           <th><span th:text="Email"></span></th>
-          <th><span th:text="AccountNotExpired"></span></th>
-          <th><span th:text="AccountNotLocked"></span></th>
-          <th><span th:text="Enabled"></span></th>
-          <th><span th:text="CredentialsNonExpired"></span></th>
+          <th><span th:text="CreatedBy"></span></th>
+          <th><span th:text="CreatedAt"></span></th>
+          <th><span th:text="ModifiedBy"></span></th>
+          <th><span th:text="ModifiedAt"></span></th>
+
         </tr>
         </thead>
         <tbody>
         <tr>
           <td><span th:text="${user.username}"></span></td>
-          <td><span th:text="${user.accountNonExpired}"></span></td>
-          <td><span th:text="${user.accountNonLocked}"></span></td>
-          <td><span th:text="${user.enabled}"></span></td>
-          <td><span th:text="${user.credentialsNonExpired}"></span></td>
+          <td><span th:text="${user.createdBy}"></span></td>
+          <td><span th:text="${{user.createdTime}}"></span></td>
+          <td><span th:text="${user.modifiedBy}"></span></td>
+          <td><span th:text="${{user.lastModifiedTime}}"></span>
+          </td>
         </tr>
         </tbody>
       </table>

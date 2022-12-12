@@ -7,8 +7,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-@SpringBootApplication
-@EnableJpaAuditing
+@SpringBootApplication(scanBasePackages = "com.mycompany.app")
+@EnableJpaAuditing(auditorAwareRef = "auditorAware")
 public class Main {
   @Bean
   public AuditorAware<String> auditorAware() {
