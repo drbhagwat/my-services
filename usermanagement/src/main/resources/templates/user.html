@@ -17,7 +17,7 @@
           <th><span th:text="CreatedAt"></span></th>
           <th><span th:text="ModifiedBy"></span></th>
           <th><span th:text="ModifiedAt"></span></th>
-
+          <th><span th:text="Role"></span></th>
         </tr>
         </thead>
         <tbody>
@@ -27,6 +27,7 @@
           <td><span th:text="${{user.createdTime}}"></span></td>
           <td><span th:text="${user.modifiedBy}"></span></td>
           <td><span th:text="${{user.lastModifiedTime}}"></span>
+          <td><span th:text="${{user.role}}"></span>
           </td>
         </tr>
         </tbody>
