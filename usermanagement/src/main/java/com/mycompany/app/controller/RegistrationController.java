@@ -3,6 +3,7 @@ package com.mycompany.app.controller;
 import com.mycompany.app.enums.UserType;
 import com.mycompany.app.model.User;
 import com.mycompany.app.service.UserService;
+import com.mycompany.app.util.Util;
 import jakarta.validation.Valid;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.stereotype.Controller;
@@ -71,8 +72,8 @@ public class RegistrationController {
         "?emailExists";
   }
 
-  public int getNumberOfUsers() {
+  private int getNumberOfUsers() {
     // get # users in the system
-    return userService.getAll().size();
+    return new Util(userService).getNumberOfUsers();
   }
 }

@@ -41,8 +41,6 @@ public class User extends Audit implements UserDetails {
   private boolean accountNonLocked;
   private boolean enabled;
   private boolean credentialsNonExpired;
-
-  @Transient
   private String role;
 
   @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})

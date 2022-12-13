@@ -17,7 +17,7 @@
         The email specified by you already exists in our system. Kindly
         update with a different e-mail.
       </div>
-      <a class="btn btn-primary mb-3"
+      <a th:if="${loggedInUser.role == 'ADMIN'}" class="btn btn-primary mb-3"
          th:href="@{/register}">
         Add User</a>
       <table class="table caption-top table-bordered table-striped"
@@ -27,8 +27,8 @@
         <tr>
           <th>User's Email</th>
           <th>View User Details</th>
-          <th>Delete User</th>
           <th>Update User</th>
+          <th>Delete User</th>
         </tr>
         </thead>
         <tbody>
@@ -40,14 +40,14 @@
               View</a>
           </td>
           <td>
-            <a class="btn btn-danger"
-               th:href="@{/api/v1/users/delete(userName=${user.username})}">
-              Delete</a>
-          </td>
-          <td>
             <a class="btn btn-warning"
                th:href="@{/api/v1/users/update(userName=${user.username})}">
               Update</a>
+          </td>
+          <td th:if="${loggedInUser.role == 'ADMIN'}">
+            <a class="btn btn-danger"
+               th:href="@{/api/v1/users/delete(userName=${user.username})}">
+              Delete</a>
           </td>
         </tr>
         </tbody>

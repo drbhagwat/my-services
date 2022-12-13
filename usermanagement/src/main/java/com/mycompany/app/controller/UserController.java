@@ -2,10 +2,9 @@ package com.mycompany.app.controller;
 
 import com.mycompany.app.model.User;
 import com.mycompany.app.service.UserService;
+import com.mycompany.app.util.Util;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,20 +18,19 @@ import java.util.List;
 public class UserController {
   private final UserService userService;
 
-  @Autowired
   public UserController(UserService userService) {
     this.userService = userService;
   }
 
   @GetMapping
-  @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
   public String getAll(Model model) {
+    model.addAttribute("loggedInUser",
+        (new Util(userService)).getLoggedInUser());
     model.addAttribute("users", userService.getAll());
     return "users";
   }
 
   @GetMapping("get")
-  @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
   public ModelAndView get(@RequestParam String userName) {
     ModelAndView modelAndView = new ModelAndView("user");
     modelAndView.addObject("user", userService.get(userName));
@@ -40,19 +38,17 @@ public class UserController {
   }
 
   @GetMapping("add")
-  @PreAuthorize("hasRole('ROLE_ADMIN')")
   public String add(Model model) {
+    model.addAttribute("loggedInUser",
+        (new Util(userService)).getLoggedInUser());
     model.addAttribute("user", new User());
     return "/register";
   }
 
   @GetMapping("update")
-  @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
   public String update(@RequestParam String userName, Model model) {
-    String loggedInUser =
-        SecurityContextHolder.getContext().getAuthentication().getName();
 
-    if (!userName.equals(loggedInUser)) {
+    if (!userName.equals(new Util(userService).getLoggedInUserName())) {
       return "redirect:/api/v1/users"; // for now it is ignored...
     } else {
       int numberOfUsers = userService.getAll().size();
@@ -65,7 +61,7 @@ public class UserController {
       ADMIN, and USER roles exist. This could be extended to other types of
       users. Note that the very first user should be ADMIN
      */
-      if (!user.getRoles().stream().findFirst().get().getName().equals("USER")) {
+      if (! (new Util(userService)).getRoleOfLoggedInUser().equals("USER")) {
         model.addAttribute("roles", List.of("ADMIN", "USER"));
       }
     }
@@ -73,7 +69,6 @@ public class UserController {
   }
 
   @PostMapping("update")
-  @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
   public String update(@Valid User newUser, BindingResult bindingResult,
                        Model model) {
     if (bindingResult.hasErrors()) {
@@ -85,7 +80,6 @@ public class UserController {
   }
 
   @GetMapping("delete")
-  @PreAuthorize("hasRole('ROLE_ADMIN')")
   public String delete(@RequestParam String userName) {
     userService.delete(userName);
     return "redirect:/api/v1/users";
