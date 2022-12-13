@@ -39,7 +39,9 @@
                th:href="@{/api/v1/users/get(userName=${user.username})}">
               View</a>
           </td>
-          <td>
+          <td
+              th:if="${loggedInUser.role == 'ADMIN'} or
+              ${loggedInUser.username == user.username}">
             <a class="btn btn-warning"
                th:href="@{/api/v1/users/update(userName=${user.username})}">
               Update</a>
